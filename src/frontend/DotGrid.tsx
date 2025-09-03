@@ -1,34 +1,15 @@
-import { Canvas } from '@react-three/fiber';
-import { Instances, Instance } from '@react-three/drei';
-import { useMemo, useState } from 'react';
-
-function Dot({ position }: { position: [number, number, number] }) {
-  const [hovered, setHovered] = useState(false);
-  
-  return (
-    <group position={position}>
-      {/* Invisible larger hit area */}
-      <mesh
-        onPointerOver={() => setHovered(true)}
-        onPointerOut={() => setHovered(false)}
-      >
-        <sphereGeometry args={[0.5, 8, 8]} />
-        <meshBasicMaterial transparent opacity={0} />
-      </mesh>
-      
-      {/* Visible dot instance */}
-      <Instance 
-        scale={hovered ? 3 : .8} 
-        color={hovered ? '#ff4444' : '#4169e1'}
-      />
-    </group>
-  );
-}
+import { Canvas, useFrame } from '@react-three/fiber';
+import { useMemo, useRef, useState } from 'react';
+import * as THREE from 'three';
 
 function GridDots() {
-  const positions = useMemo(() => {
-    const gridWidth = 50;  // 100 wide total (-50 to 50)
-    const gridHeight = 25; // 50 tall total (-25 to 25)
+  const meshRef = useRef<THREE.InstancedMesh>(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  
+  // Create positions and matrices for instances
+  const { positions, count } = useMemo(() => {
+    const gridWidth = 30;
+    const gridHeight = 15;
     const spacing = 1;
     const points: [number, number, number][] = [];
     
@@ -38,18 +19,82 @@ function GridDots() {
       }
     }
     
-    return points;
+    return { positions: points, count: points.length };
   }, []);
 
-  return (
-    <Instances limit={positions.length}>
-      <sphereGeometry args={[0.03, 64, 64]} />
-      <meshBasicMaterial color="#4169e1" />
+  // Initialize instance matrices after mount
+  useFrame(() => {
+    if (!meshRef.current || meshRef.current.userData.initialized) return;
+    
+    const matrix = new THREE.Matrix4();
+    positions.forEach((pos, i) => {
+      matrix.setPosition(pos[0], pos[1], pos[2]);
+      meshRef.current!.setMatrixAt(i, matrix);
+    });
+    meshRef.current.instanceMatrix.needsUpdate = true;
+    meshRef.current.userData.initialized = true;
+  });
+
+  // Handle hover with raycasting and distance threshold
+  useFrame(({ raycaster, pointer, camera }) => {
+    if (!meshRef.current) return;
+    
+    // Cast ray to ground plane to get mouse world position
+    raycaster.setFromCamera(pointer, camera);
+    const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+    const mousePoint = new THREE.Vector3();
+    raycaster.ray.intersectPlane(plane, mousePoint);
+    
+    if (!mousePoint) return;
+    
+    // Find closest dot within threshold
+    const hoverThreshold = 0.5; // Distance threshold for hover
+    let closestIndex: number | null = null;
+    let closestDistance = hoverThreshold;
+    
+    positions.forEach((pos, i) => {
+      const distance = Math.sqrt(
+        Math.pow(mousePoint.x - pos[0], 2) + 
+        Math.pow(mousePoint.z - pos[2], 2)
+      );
       
-      {positions.map((pos, i) => (
-        <Dot key={i} position={pos} />
-      ))}
-    </Instances>
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestIndex = i;
+      }
+    });
+    
+    if (closestIndex !== hoveredIndex) {
+      const matrix = new THREE.Matrix4();
+      
+      // Reset previous hover
+      if (hoveredIndex !== null) {
+        const pos = positions[hoveredIndex];
+        matrix.setPosition(pos[0], pos[1], pos[2]);
+        meshRef.current.setMatrixAt(hoveredIndex, matrix);
+      }
+      
+      // Set new hover with scale
+      if (closestIndex !== null) {
+        const pos = positions[closestIndex];
+        matrix.compose(
+          new THREE.Vector3(pos[0], pos[1], pos[2]),
+          new THREE.Quaternion(),
+          new THREE.Vector3(3, 3, 3) // Scale up 3x
+        );
+        meshRef.current.setMatrixAt(closestIndex, matrix);
+      }
+      
+      meshRef.current.instanceMatrix.needsUpdate = true;
+      setHoveredIndex(closestIndex);
+    }
+  });
+
+  return (
+    <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
+      <sphereGeometry args={[0.03, 16, 16]} />
+      <meshBasicMaterial color="#4169e1" />
+    </instancedMesh>
   );
 }
 
