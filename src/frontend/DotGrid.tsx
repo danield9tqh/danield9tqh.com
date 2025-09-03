@@ -2,9 +2,10 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 
-function GridDots() {
+function GridDots({ isMouseDown }: { isMouseDown: boolean }) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [greenIndexes] = useState<Set<number>>(() => new Set());
   
   // Create positions and matrices for instances
   const { positions, count } = useMemo(() => {
@@ -22,16 +23,23 @@ function GridDots() {
     return { positions: points, count: points.length };
   }, []);
 
-  // Initialize instance matrices after mount
+  // Initialize instance matrices and colors after mount
   useFrame(() => {
     if (!meshRef.current || meshRef.current.userData.initialized) return;
     
     const matrix = new THREE.Matrix4();
+    const color = new THREE.Color('#4169e1');
+    
     positions.forEach((pos, i) => {
       matrix.setPosition(pos[0], pos[1], pos[2]);
       meshRef.current!.setMatrixAt(i, matrix);
+      meshRef.current!.setColorAt(i, color);
     });
+    
     meshRef.current.instanceMatrix.needsUpdate = true;
+    if (meshRef.current.instanceColor) {
+      meshRef.current.instanceColor.needsUpdate = true;
+    }
     meshRef.current.userData.initialized = true;
   });
 
@@ -64,11 +72,20 @@ function GridDots() {
       }
     });
     
+    // If mouse is down and hovering, make it green
+    if (isMouseDown && closestIndex !== null && !greenIndexes.has(closestIndex)) {
+      greenIndexes.add(closestIndex);
+      meshRef.current.setColorAt(closestIndex, new THREE.Color('#00ff00'));
+      if (meshRef.current.instanceColor) {
+        meshRef.current.instanceColor.needsUpdate = true;
+      }
+    }
+    
     if (closestIndex !== hoveredIndex) {
       const matrix = new THREE.Matrix4();
       
       // Reset previous hover
-      if (hoveredIndex !== null) {
+      if (hoveredIndex !== null && !greenIndexes.has(hoveredIndex)) {
         const pos = positions[hoveredIndex];
         matrix.setPosition(pos[0], pos[1], pos[2]);
         meshRef.current.setMatrixAt(hoveredIndex, matrix);
@@ -77,10 +94,11 @@ function GridDots() {
       // Set new hover with scale
       if (closestIndex !== null) {
         const pos = positions[closestIndex];
+        const scale = greenIndexes.has(closestIndex) ? 3 : 3; // Keep green ones scaled
         matrix.compose(
           new THREE.Vector3(pos[0], pos[1], pos[2]),
           new THREE.Quaternion(),
-          new THREE.Vector3(3, 3, 3) // Scale up 3x
+          new THREE.Vector3(scale, scale, scale)
         );
         meshRef.current.setMatrixAt(closestIndex, matrix);
       }
@@ -91,18 +109,28 @@ function GridDots() {
   });
 
   return (
-    <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
+    <instancedMesh 
+      ref={meshRef} 
+      args={[undefined, undefined, count]}
+    >
       <sphereGeometry args={[0.03, 16, 16]} />
-      <meshBasicMaterial color="#4169e1" />
+      <meshBasicMaterial vertexColors />
     </instancedMesh>
   );
 }
 
 export function DotGrid() {
+  const [isMouseDown, setIsMouseDown] = useState(false);
+  
   return (
-    <div style={{ position: 'fixed', inset: 0, background: '#f5f5f0' }}>
+    <div 
+      style={{ position: 'fixed', inset: 0, background: '#f5f5f0' }}
+      onMouseDown={() => setIsMouseDown(true)}
+      onMouseUp={() => setIsMouseDown(false)}
+      onMouseLeave={() => setIsMouseDown(false)}
+    >
       <Canvas orthographic camera={{ zoom: 50, position: [0, 100, 0], near: 1, far: 1000 }}>
-        <GridDots />
+        <GridDots isMouseDown={isMouseDown} />
       </Canvas>
     </div>
   );
