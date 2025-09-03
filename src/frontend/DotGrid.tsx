@@ -2,7 +2,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 
-function GridDots({ isMouseDown }: { isMouseDown: boolean }) {
+function GridDots({ isLeftMouseDown, isRightMouseDown }: { isLeftMouseDown: boolean; isRightMouseDown: boolean }) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [greenIndexes] = useState<Set<number>>(() => new Set());
@@ -72,10 +72,19 @@ function GridDots({ isMouseDown }: { isMouseDown: boolean }) {
       }
     });
     
-    // If mouse is down and hovering, make it green
-    if (isMouseDown && closestIndex !== null && !greenIndexes.has(closestIndex)) {
+    // Left mouse: make dots green
+    if (isLeftMouseDown && closestIndex !== null && !greenIndexes.has(closestIndex)) {
       greenIndexes.add(closestIndex);
       meshRef.current.setColorAt(closestIndex, new THREE.Color('#00ff00'));
+      if (meshRef.current.instanceColor) {
+        meshRef.current.instanceColor.needsUpdate = true;
+      }
+    }
+    
+    // Right mouse: make dots blue again (erase)
+    if (isRightMouseDown && closestIndex !== null && greenIndexes.has(closestIndex)) {
+      greenIndexes.delete(closestIndex);
+      meshRef.current.setColorAt(closestIndex, new THREE.Color('#4169e1'));
       if (meshRef.current.instanceColor) {
         meshRef.current.instanceColor.needsUpdate = true;
       }
@@ -120,17 +129,28 @@ function GridDots({ isMouseDown }: { isMouseDown: boolean }) {
 }
 
 export function DotGrid() {
-  const [isMouseDown, setIsMouseDown] = useState(false);
+  const [isLeftMouseDown, setIsLeftMouseDown] = useState(false);
+  const [isRightMouseDown, setIsRightMouseDown] = useState(false);
   
   return (
     <div 
       style={{ position: 'fixed', inset: 0, background: '#f5f5f0' }}
-      onMouseDown={() => setIsMouseDown(true)}
-      onMouseUp={() => setIsMouseDown(false)}
-      onMouseLeave={() => setIsMouseDown(false)}
+      onMouseDown={(e) => {
+        if (e.button === 0) setIsLeftMouseDown(true);  // Left button
+        if (e.button === 2) setIsRightMouseDown(true); // Right button
+      }}
+      onMouseUp={(e) => {
+        if (e.button === 0) setIsLeftMouseDown(false);
+        if (e.button === 2) setIsRightMouseDown(false);
+      }}
+      onMouseLeave={() => {
+        setIsLeftMouseDown(false);
+        setIsRightMouseDown(false);
+      }}
+      onContextMenu={(e) => e.preventDefault()} // Prevent right-click menu
     >
       <Canvas orthographic camera={{ zoom: 50, position: [0, 100, 0], near: 1, far: 1000 }}>
-        <GridDots isMouseDown={isMouseDown} />
+        <GridDots isLeftMouseDown={isLeftMouseDown} isRightMouseDown={isRightMouseDown} />
       </Canvas>
     </div>
   );
