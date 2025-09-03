@@ -7,6 +7,7 @@ function GridDots({ isLeftMouseDown, isRightMouseDown }: { isLeftMouseDown: bool
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [paintedIndexes] = useState<Set<number>>(() => new Set());
+  const prevMousePos = useRef<THREE.Vector3 | null>(null);
   
   // Create positions and spatial grid
   const { positions, count, spatialGrid } = useMemo(() => {
@@ -56,25 +57,65 @@ function GridDots({ isLeftMouseDown, isRightMouseDown }: { isLeftMouseDown: bool
     if (!mousePoint) return;
     
     const paintThreshold = 0.5; // Distance for painting (left click)
-    const eraseThreshold = 2; // Larger distance for erasing (right click)
+    const eraseThreshold = 1.5; // Larger distance for erasing (right click)
     const hoverThreshold = 0.5; // Distance for hover effect
     
-    // Left mouse: paint dots (scale them up)
+    // Left mouse: paint dots with interpolation
     if (isLeftMouseDown) {
-      const closest = spatialGrid.findClosestPoint(mousePoint.x, mousePoint.z, paintThreshold);
-      if (closest && !paintedIndexes.has(closest.index)) {
-        paintedIndexes.add(closest.index);
-        // Scale up the painted dot
-        const pos = positions[closest.index];
-        const matrix = new THREE.Matrix4();
-        matrix.compose(
-          new THREE.Vector3(pos[0], pos[1], pos[2]),
-          new THREE.Quaternion(),
-          new THREE.Vector3(3, 3, 3)
-        );
-        meshRef.current.setMatrixAt(closest.index, matrix);
-        meshRef.current.instanceMatrix.needsUpdate = true;
+      // If we have a previous position, interpolate between points
+      if (prevMousePos.current) {
+        const distance = mousePoint.distanceTo(prevMousePos.current);
+        const steps = Math.max(1, Math.ceil(distance / 0.1)); // Check every 0.1 units
+        
+        for (let i = 0; i <= steps; i++) {
+          const t = i / steps;
+          const checkPoint = new THREE.Vector3().lerpVectors(
+            prevMousePos.current,
+            mousePoint,
+            t
+          );
+          
+          const closest = spatialGrid.findClosestPoint(checkPoint.x, checkPoint.z, paintThreshold);
+          if (closest && !paintedIndexes.has(closest.index)) {
+            paintedIndexes.add(closest.index);
+            // Scale up the painted dot
+            const pos = positions[closest.index];
+            const matrix = new THREE.Matrix4();
+            matrix.compose(
+              new THREE.Vector3(pos[0], pos[1], pos[2]),
+              new THREE.Quaternion(),
+              new THREE.Vector3(3, 3, 3)
+            );
+            meshRef.current.setMatrixAt(closest.index, matrix);
+            meshRef.current.instanceMatrix.needsUpdate = true;
+          }
+        }
+      } else {
+        // First click - just paint the single dot
+        const closest = spatialGrid.findClosestPoint(mousePoint.x, mousePoint.z, paintThreshold);
+        if (closest && !paintedIndexes.has(closest.index)) {
+          paintedIndexes.add(closest.index);
+          const pos = positions[closest.index];
+          const matrix = new THREE.Matrix4();
+          matrix.compose(
+            new THREE.Vector3(pos[0], pos[1], pos[2]),
+            new THREE.Quaternion(),
+            new THREE.Vector3(3, 3, 3)
+          );
+          meshRef.current.setMatrixAt(closest.index, matrix);
+          meshRef.current.instanceMatrix.needsUpdate = true;
+        }
       }
+    }
+    
+    // Store current mouse position for next frame
+    if (isLeftMouseDown || isRightMouseDown) {
+      if (!prevMousePos.current) {
+        prevMousePos.current = new THREE.Vector3();
+      }
+      prevMousePos.current.copy(mousePoint);
+    } else {
+      prevMousePos.current = null; // Reset when mouse is released
     }
     
     // Right mouse: erase dots (return them to normal size)
@@ -158,6 +199,11 @@ export function DotGrid() {
       onMouseLeave={() => {
         setIsLeftMouseDown(false);
         setIsRightMouseDown(false);
+      }}
+      onMouseEnter={(e) => {
+        // e.buttons is a bitmask: 1 = left, 2 = right, 4 = middle
+        if (e.buttons & 1) setIsLeftMouseDown(true);   // Left button is pressed
+        if (e.buttons & 2) setIsRightMouseDown(true);  // Right button is pressed
       }}
       onContextMenu={(e) => e.preventDefault()}
     >
