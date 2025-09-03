@@ -1,9 +1,12 @@
 import { Canvas, useFrame } from '@react-three/fiber';
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState, useEffect } from 'react';
 import * as THREE from 'three';
 import { SpatialHashGrid } from './SpatialHashGrid';
+import { hashIndices } from './hashIndices';
+import { WelcomeDialog } from './WelcomeDialog';
+import { useLandingPassword } from '../hooks/useLandingPassword';
 
-function GridDots({ isLeftMouseDown, isRightMouseDown }: { isLeftMouseDown: boolean; isRightMouseDown: boolean }) {
+function GridDots({ paintMode, eraseMode, onHashChange }: { paintMode: boolean; eraseMode: boolean; onHashChange: (hash: number) => void }) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [paintedIndexes] = useState<Set<number>>(() => new Set());
@@ -61,7 +64,7 @@ function GridDots({ isLeftMouseDown, isRightMouseDown }: { isLeftMouseDown: bool
     const hoverThreshold = 0.5; // Distance for hover effect
     
     // Left mouse: paint dots with interpolation
-    if (isLeftMouseDown) {
+    if (paintMode) {
       // If we have a previous position, interpolate between points
       if (prevMousePos.current) {
         const distance = mousePoint.distanceTo(prevMousePos.current);
@@ -77,9 +80,13 @@ function GridDots({ isLeftMouseDown, isRightMouseDown }: { isLeftMouseDown: bool
           
           const closest = spatialGrid.findClosestPoint(checkPoint.x, checkPoint.z, paintThreshold);
           if (closest && !paintedIndexes.has(closest.index)) {
-            paintedIndexes.add(closest.index);
-            // Scale up the painted dot
             const pos = positions[closest.index];
+            // Skip origin dot (0, 0, 0)
+            if (pos[0] === 0 && pos[1] === 0 && pos[2] === 0) continue;
+            paintedIndexes.add(closest.index);
+            const newHash = hashIndices(paintedIndexes);
+            onHashChange(newHash);
+            // Scale up the painted dot
             const matrix = new THREE.Matrix4();
             matrix.compose(
               new THREE.Vector3(pos[0], pos[1], pos[2]),
@@ -94,22 +101,27 @@ function GridDots({ isLeftMouseDown, isRightMouseDown }: { isLeftMouseDown: bool
         // First click - just paint the single dot
         const closest = spatialGrid.findClosestPoint(mousePoint.x, mousePoint.z, paintThreshold);
         if (closest && !paintedIndexes.has(closest.index)) {
-          paintedIndexes.add(closest.index);
           const pos = positions[closest.index];
-          const matrix = new THREE.Matrix4();
-          matrix.compose(
-            new THREE.Vector3(pos[0], pos[1], pos[2]),
-            new THREE.Quaternion(),
-            new THREE.Vector3(3, 3, 3)
-          );
-          meshRef.current.setMatrixAt(closest.index, matrix);
-          meshRef.current.instanceMatrix.needsUpdate = true;
+          // Skip origin dot (0, 0, 0)
+          if (!(pos[0] === 0 && pos[1] === 0 && pos[2] === 0)) {
+            paintedIndexes.add(closest.index);
+            const newHash = hashIndices(paintedIndexes);
+            onHashChange(newHash);
+            const matrix = new THREE.Matrix4();
+            matrix.compose(
+              new THREE.Vector3(pos[0], pos[1], pos[2]),
+              new THREE.Quaternion(),
+              new THREE.Vector3(3, 3, 3)
+            );
+            meshRef.current.setMatrixAt(closest.index, matrix);
+            meshRef.current.instanceMatrix.needsUpdate = true;
+          }
         }
       }
     }
     
     // Store current mouse position for next frame
-    if (isLeftMouseDown || isRightMouseDown) {
+    if (paintMode || eraseMode) {
       if (!prevMousePos.current) {
         prevMousePos.current = new THREE.Vector3();
       }
@@ -119,13 +131,15 @@ function GridDots({ isLeftMouseDown, isRightMouseDown }: { isLeftMouseDown: bool
     }
     
     // Right mouse: erase dots (return them to normal size)
-    if (isRightMouseDown) {
+    if (eraseMode) {
       const nearbyPoints = spatialGrid.findPointsWithinRadius(mousePoint.x, mousePoint.z, eraseThreshold);
       let needsUpdate = false;
       
       nearbyPoints.forEach(index => {
         if (paintedIndexes.has(index)) {
           paintedIndexes.delete(index);
+          const newHash = hashIndices(paintedIndexes);
+          onHashChange(newHash);
           const pos = positions[index];
           const matrix = new THREE.Matrix4();
           matrix.setPosition(pos[0], pos[1], pos[2]);
@@ -184,6 +198,27 @@ function GridDots({ isLeftMouseDown, isRightMouseDown }: { isLeftMouseDown: bool
 export function DotGrid() {
   const [isLeftMouseDown, setIsLeftMouseDown] = useState(false);
   const [isRightMouseDown, setIsRightMouseDown] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(false);
+  const currentHashRef = useRef<number>(0);
+  const { verifyPassword } = useLandingPassword();
+  
+  // Handle cmd+enter key press
+  const handleKeyDown = async (e: KeyboardEvent) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      const isValid = await verifyPassword(currentHashRef.current);
+      if (isValid) {
+        setShowWelcome(true);
+        // Hide the welcome message after 3 seconds
+        setTimeout(() => setShowWelcome(false), 3000);
+      }
+    }
+  };
+  
+  // Set up keyboard listener
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  });
   
   return (
     <div 
@@ -208,8 +243,14 @@ export function DotGrid() {
       onContextMenu={(e) => e.preventDefault()}
     >
       <Canvas orthographic camera={{ zoom: 50, position: [0, 100, 0], near: 1, far: 1000 }}>
-        <GridDots isLeftMouseDown={isLeftMouseDown} isRightMouseDown={isRightMouseDown} />
+        <GridDots 
+          paintMode={isLeftMouseDown} 
+          eraseMode={isRightMouseDown} 
+          onHashChange={(hash) => currentHashRef.current = hash}
+        />
       </Canvas>
+      
+      <WelcomeDialog show={showWelcome} />
     </div>
   );
 }
