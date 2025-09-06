@@ -1,0 +1,168 @@
+.cv-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow-y: auto;
+  background: #ffffff;
+  color: #000000;
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+  padding: 2rem;
+  line-height: 1.6;
+}
+
+.cv-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.cv-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: #f8f8f8;
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+}
+
+.cv-name {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #000000;
+}
+
+.cv-contact {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.cv-contact a {
+  color: #0066cc;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  font-size: 0.95rem;
+}
+
+.cv-contact a:hover {
+  color: #0052a3;
+  text-decoration: underline;
+}
+
+.cv-section {
+  margin-bottom: 3rem;
+}
+
+.cv-section-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 2.5rem;
+  color: #0066cc;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 2px solid #0066cc;
+  padding-bottom: 0.5rem;
+}
+
+.experience-item, .education-item {
+  margin-bottom: 2rem;
+  padding-left: 1rem;
+  border-left: 3px solid #e0e0e0;
+  transition: border-color 0.3s ease;
+}
+
+.experience-item:hover, .education-item:hover {
+  border-left-color: #cc0066;
+}
+
+.experience-header, .education-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.company-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #cc0066;
+}
+
+.position-title {
+  font-style: italic;
+  color: #666666;
+  margin-left: 0.5rem;
+}
+
+.date-range {
+  color: #666666;
+  font-size: 0.9rem;
+}
+
+.experience-description ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 0.5rem;
+}
+
+.experience-description li {
+  position: relative;
+  padding-left: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: #333333;
+  line-height: 1.8;
+  transition: color 0.3s ease;
+}
+
+.experience-description li:before {
+  content: ">";
+  position: absolute;
+  left: 0;
+  color: #e0e0e0;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.experience-item:hover .experience-description li:before {
+  color: #cc0066;
+}
+
+.education-degree {
+  font-size: 1.1rem;
+  color: #cc0066;
+  margin-bottom: 0.5rem;
+}
+
+.education-school {
+  color: #666666;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .cv-container {
+    padding: 1rem;
+  }
+  
+  .cv-name {
+    font-size: 2rem;
+  }
+  
+  .cv-contact {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  
+  .experience-header, .education-header {
+    flex-direction: column;
+  }
+  
+  .date-range {
+    margin-top: 0.5rem;
+  }
+}

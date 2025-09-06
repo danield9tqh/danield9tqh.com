@@ -4,11 +4,8 @@ import api from "./backend/server";
 
 const server = serve({
   routes: {
-    "/": index,
-  },
-
-  async fetch(req) {
-    return api.fetch(req);
+    "/api/*": async (req) => api.fetch(req),
+    "/*": index,
   },
 
   development: process.env.NODE_ENV !== "production" && {
