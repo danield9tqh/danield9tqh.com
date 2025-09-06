@@ -1,9 +1,9 @@
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useMemo, useRef, useState, useEffect } from 'react';
 import * as THREE from 'three';
+import { OrbitControls } from '@react-three/drei';
 import { SpatialHashGrid } from './SpatialHashGrid';
 import { hashIndices } from './hashIndices';
-import { WelcomeDialog } from './WelcomeDialog';
 import { useLandingPassword } from '../hooks/useLandingPassword';
 
 function GridDots({ paintMode, eraseMode, onHashChange }: { paintMode: boolean; eraseMode: boolean; onHashChange: (hash: number) => void }) {
@@ -15,7 +15,7 @@ function GridDots({ paintMode, eraseMode, onHashChange }: { paintMode: boolean; 
   // Create positions and spatial grid
   const { positions, count, spatialGrid } = useMemo(() => {
     const gridWidth = 30;
-    const gridHeight = 15;
+    const gridHeight = 30;
     const spacing = 1;
     const points: [number, number, number][] = [];
     
@@ -198,18 +198,17 @@ function GridDots({ paintMode, eraseMode, onHashChange }: { paintMode: boolean; 
 export function DotGrid() {
   const [isLeftMouseDown, setIsLeftMouseDown] = useState(false);
   const [isRightMouseDown, setIsRightMouseDown] = useState(false);
-  const [showWelcome, setShowWelcome] = useState(false);
+  const [unlocked, setUnlocked] = useState(false);
   const currentHashRef = useRef<number>(0);
   const { verifyPassword } = useLandingPassword();
   
-  // Handle cmd+enter key press
+  // Handle keyboard events
   const handleKeyDown = async (e: KeyboardEvent) => {
+    // Password verification
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
       const isValid = await verifyPassword(currentHashRef.current);
       if (isValid) {
-        setShowWelcome(true);
-        // Hide the welcome message after 3 seconds
-        setTimeout(() => setShowWelcome(false), 3000);
+        setUnlocked(true);
       }
     }
   };
@@ -243,14 +242,23 @@ export function DotGrid() {
       onContextMenu={(e) => e.preventDefault()}
     >
       <Canvas orthographic camera={{ zoom: 50, position: [0, 100, 0], near: 1, far: 1000 }}>
+        <OrbitControls
+          enableRotate={unlocked}
+          enablePan={unlocked}
+          enableZoom={unlocked}
+          maxPolarAngle={Math.PI / 2} // Prevent rotating below ground
+          minDistance={10}
+          maxDistance={150}
+          target={[0, 0, 0]} // Look at origin
+        />
         <GridDots 
-          paintMode={isLeftMouseDown} 
-          eraseMode={isRightMouseDown} 
+          paintMode={isLeftMouseDown && !unlocked} 
+          eraseMode={isRightMouseDown && !unlocked} 
           onHashChange={(hash) => currentHashRef.current = hash}
         />
       </Canvas>
       
-      <WelcomeDialog show={showWelcome} />
+      {/* <WelcomeDialog show={unlocked} /> */}
     </div>
   );
 }
