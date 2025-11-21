@@ -93,6 +93,15 @@
   color: #cc0066;
 }
 
+.company-name a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.company-name a:hover {
+  text-decoration: underline;
+}
+
 .position-title {
   font-style: italic;
   color: #666666;

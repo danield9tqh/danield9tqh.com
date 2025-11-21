@@ -19,8 +19,69 @@ export function CV() {
           <div className="experience-item">
             <div className="experience-header">
               <div>
-                <span className="company-name">Iron Fish</span>
-                <span className="position-title">— Senior Software Engineer</span>
+                <span className="company-name">
+                  <a href="https://raindrop.ai" target="_blank" rel="noopener noreferrer">
+                    Raindrop.ai
+                  </a>
+                </span>
+                <span className="position-title">— Early Engineering Contributor (Contract)</span>
+              </div>
+              <span className="date-range">Sept 2025 - Nov 2025</span>
+            </div>
+            <div className="experience-description">
+              <ul>
+                <li>
+                  Worked directly with the founders in an evaluation period for a potential early technical
+                  leadership role.
+                </li>
+                <li>
+                  Helped ship Experiments and Signals features across frontend and data pipeline (event
+                  ingestion -&gt; clickhouse -&gt; AI labelling)
+                </li>
+                <li>Streamlined local dev and pre-prod infrastructure</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="experience-item">
+            <div className="experience-header">
+              <div>
+                <span className="company-name">
+                  <a href="https://chad-marketing.com" target="_blank" rel="noopener noreferrer">
+                    chad-marketing.com
+                  </a>
+                </span>
+                <span className="position-title">— Creator / Solo Dev</span>
+              </div>
+              <span className="date-range">June 2025 - Aug 2025</span>
+            </div>
+            <div className="experience-description">
+              <ul>
+                <li>
+                  Built an agent-driven system for founders to run authentic "direct-from-founder" Twitter/X
+                  accounts
+                </li>
+                <li>
+                  Implemented real-time voice + text LLM chat and ambient agents with tools for posting,
+                  retrieval, and context search.
+                </li>
+                <li>
+                  Deployed a production-grade stack with secure AuthN/AuthZ, Dockerized services, automated
+                  staging/production environments, and CI/CD pipelines driven from GitHub.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="experience-item">
+            <div className="experience-header">
+              <div>
+                <span className="company-name">
+                  <a href="https://ironfish.network" target="_blank" rel="noopener noreferrer">
+                    Iron Fish
+                  </a>
+                </span>
+                <span className="position-title">— Protocol Engineer</span>
               </div>
               <span className="date-range">April 2022 - Present</span>
             </div>
@@ -49,7 +110,12 @@ export function CV() {
           <div className="experience-item">
             <div className="experience-header">
               <div>
-                <span className="company-name">CFA Exam + Independent Study</span>
+                <span className="company-name">
+                  <a href="https://www.cfainstitute.org/programs/cfa-program/exam" target="_blank" rel="noopener noreferrer">
+                    CFA Exam
+                  </a>
+                  {" + Independent Study"}
+                </span>
               </div>
               <span className="date-range">April 2021 - April 2022</span>
             </div>
