@@ -35,8 +35,24 @@ export function CV() {
                   leadership role.
                 </li>
                 <li>
-                  Helped ship Experiments and Signals features across frontend and data pipeline (event
-                  ingestion -&gt; clickhouse -&gt; AI labelling)
+                  Helped ship{" "}
+                  <a
+                    href="https://www.linkedin.com/posts/alexisgauba_were-excited-to-announce-raindrop-experiments-activity-7382156541791137792-ZU7G/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Experiments
+                  </a>
+                  <span className="external-link-arrow">↗</span> and{" "}
+                  <a
+                    href="https://www.raindrop.ai/docs/platform/signals"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Signals
+                  </a>
+                  <span className="external-link-arrow">↗</span> features across frontend and data pipeline
+                  (event ingestion -&gt; clickhouse -&gt; AI labelling)
                 </li>
                 <li>Streamlined local dev and pre-prod infrastructure</li>
               </ul>
