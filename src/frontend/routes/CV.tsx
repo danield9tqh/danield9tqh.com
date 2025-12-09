@@ -1,4 +1,5 @@
 import "./CV.css";
+import { Globe } from "lucide-react";
 
 export function CV() {
   return (
@@ -20,8 +21,15 @@ export function CV() {
             <div className="experience-header">
               <div>
                 <span className="company-name">
-                  <a href="https://raindrop.ai" target="_blank" rel="noopener noreferrer">
-                    Raindrop.ai
+                  Raindrop.ai
+                  <a
+                    href="https://raindrop.ai"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="web-link"
+                    aria-label="Visit Raindrop.ai"
+                  >
+                    <Globe className="web-icon" size={16} />
                   </a>
                 </span>
                 <span className="position-title">— Early Engineering Contributor (Contract)</span>
@@ -63,8 +71,33 @@ export function CV() {
             <div className="experience-header">
               <div>
                 <span className="company-name">
-                  <a href="https://chad-marketing.com" target="_blank" rel="noopener noreferrer">
-                    chad-marketing.com
+                  chad-marketing.com
+                  <a
+                    href="https://chad-marketing.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="web-link"
+                    aria-label="Visit chad-marketing.com"
+                  >
+                    <Globe className="web-icon" size={16} />
+                  </a>
+                  <a
+                    href="https://github.com/danield9tqh/CHAD"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="github-link"
+                    aria-label="GitHub repository"
+                  >
+                    <svg
+                      className="github-icon"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      fill="currentColor"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
+                    </svg>
                   </a>
                 </span>
                 <span className="position-title">— Creator / Solo Dev</span>
@@ -93,8 +126,15 @@ export function CV() {
             <div className="experience-header">
               <div>
                 <span className="company-name">
-                  <a href="https://ironfish.network" target="_blank" rel="noopener noreferrer">
-                    Iron Fish
+                  Iron Fish
+                  <a
+                    href="https://ironfish.network"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="web-link"
+                    aria-label="Visit Iron Fish"
+                  >
+                    <Globe className="web-icon" size={16} />
                   </a>
                 </span>
                 <span className="position-title">— Protocol Engineer</span>
@@ -127,8 +167,15 @@ export function CV() {
             <div className="experience-header">
               <div>
                 <span className="company-name">
-                  <a href="https://www.cfainstitute.org/programs/cfa-program/exam" target="_blank" rel="noopener noreferrer">
-                    CFA Exam
+                  CFA Exam
+                  <a
+                    href="https://www.cfainstitute.org/programs/cfa-program/exam"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="web-link"
+                    aria-label="Visit CFA Program"
+                  >
+                    <Globe className="web-icon" size={16} />
                   </a>
                   {" + Independent Study"}
                 </span>

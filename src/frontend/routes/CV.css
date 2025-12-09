@@ -68,18 +68,21 @@
   padding-bottom: 0.5rem;
 }
 
-.experience-item, .education-item {
+.experience-item,
+.education-item {
   margin-bottom: 2rem;
   padding-left: 1rem;
   border-left: 3px solid #e0e0e0;
   transition: border-color 0.3s ease;
 }
 
-.experience-item:hover, .education-item:hover {
+.experience-item:hover,
+.education-item:hover {
   border-left-color: #cc0066;
 }
 
-.experience-header, .education-header {
+.experience-header,
+.education-header {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
@@ -100,6 +103,42 @@
 
 .company-name a:hover {
   text-decoration: underline;
+}
+
+.github-link {
+  display: inline-block;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+.github-icon {
+  color: #cc0066;
+  transition: opacity 0.3s ease;
+}
+
+.github-link:hover .github-icon {
+  opacity: 0.7;
+}
+
+.company-name a:hover+.github-link .github-icon {
+  opacity: 1;
+}
+
+.web-link {
+  display: inline-block;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+.web-icon {
+  color: #cc0066;
+  transition: opacity 0.3s ease;
+}
+
+.web-link:hover .web-icon {
+  opacity: 0.7;
 }
 
 .position-title {
@@ -175,21 +214,22 @@
   .cv-container {
     padding: 1rem;
   }
-  
+
   .cv-name {
     font-size: 2rem;
   }
-  
+
   .cv-contact {
     flex-direction: column;
     gap: 0.5rem;
     align-items: center;
   }
-  
-  .experience-header, .education-header {
+
+  .experience-header,
+  .education-header {
     flex-direction: column;
   }
-  
+
   .date-range {
     margin-top: 0.5rem;
   }
