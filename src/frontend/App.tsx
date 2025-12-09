@@ -8,6 +8,7 @@ import {
 } from "@tanstack/react-router";
 import { Home } from "./routes/Home";
 import { CV } from "./routes/CV";
+import { ZK } from "./routes/ZK";
 
 const rootRoute = createRootRoute({
   component: () => <Outlet />,
@@ -25,7 +26,13 @@ const cvRoute = createRoute({
   component: CV,
 });
 
-const routeTree = rootRoute.addChildren([indexRoute, cvRoute]);
+const zkRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/zk",
+  component: ZK,
+});
+
+const routeTree = rootRoute.addChildren([indexRoute, cvRoute, zkRoute]);
 
 const router = createRouter({ routeTree });
 

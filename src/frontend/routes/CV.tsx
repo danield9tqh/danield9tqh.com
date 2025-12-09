@@ -1,5 +1,6 @@
 import "./CV.css";
 import { Globe } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 
 export function CV() {
   return (
@@ -178,6 +179,13 @@ export function CV() {
                     <Globe className="web-icon" size={16} />
                   </a>
                   {" + Independent Study"}
+                  <Link
+                    to="/zk"
+                    className="web-link"
+                    aria-label="Visit Zero Knowledge Study Materials"
+                  >
+                    <Globe className="web-icon" size={16} />
+                  </Link>
                 </span>
               </div>
               <span className="date-range">April 2021 - April 2022</span>

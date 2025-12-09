@@ -1,0 +1,221 @@
+.zk-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow-y: auto;
+    background: #ffffff;
+    color: #000000;
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+    padding: 2rem;
+    line-height: 1.6;
+}
+
+.zk-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.zk-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding: 2rem 1.5rem;
+}
+
+.zk-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #000000;
+}
+
+.zk-subtitle {
+    font-size: 1.1rem;
+    color: #666666;
+    font-style: italic;
+}
+
+.zk-intro-section {
+    margin-bottom: 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.zk-intro-block {
+    background: #f8f8f8;
+    padding: 2rem;
+    border-radius: 8px;
+    border: 2px solid #e0e0e0;
+}
+
+.zk-intro-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #0066cc;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.zk-intro-block p {
+    margin-bottom: 1rem;
+    color: #333333;
+    line-height: 1.8;
+}
+
+.zk-intro-block p:last-child {
+    margin-bottom: 0;
+}
+
+.zk-intro-block a {
+    color: #0066cc;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.zk-intro-block a:hover {
+    color: #0052a3;
+    text-decoration: underline;
+}
+
+.zk-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.zk-card {
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+    min-height: 250px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.zk-card:hover {
+    border-color: #0066cc;
+    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.15);
+    transform: translateY(-2px);
+}
+
+.zk-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    gap: 1rem;
+}
+
+.zk-card-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #0066cc;
+    margin: 0;
+    flex: 1;
+    line-height: 1.3;
+}
+
+.zk-time-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: flex-start;
+    justify-content: flex-end;
+    flex-shrink: 0;
+}
+
+.zk-time-tag {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.zk-time-tag-minutes {
+    background: #d4edda;
+    color: #155724;
+}
+
+.zk-time-tag-hours {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.zk-time-tag-days {
+    background: #ffe0b2;
+    color: #e65100;
+}
+
+.zk-time-tag-weeks {
+    background: #ffcccc;
+    color: #c92a2a;
+}
+
+.zk-card-description {
+    color: #333333;
+    line-height: 1.7;
+    margin-bottom: 1rem;
+    flex: 1;
+}
+
+.zk-card-keywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid #e0e0e0;
+}
+
+.zk-keyword-tag {
+    display: inline-block;
+    background: #f0f0f0;
+    color: #666666;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border: 1px solid #e0e0e0;
+}
+
+@media (max-width: 768px) {
+    .zk-container {
+        padding: 1rem;
+    }
+
+    .zk-title {
+        font-size: 2rem;
+    }
+
+    .zk-subtitle {
+        font-size: 1rem;
+    }
+
+    .zk-gallery {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .zk-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .zk-time-tags {
+        align-self: flex-start;
+    }
+
+    .zk-intro-block {
+        padding: 1.5rem;
+    }
+}
