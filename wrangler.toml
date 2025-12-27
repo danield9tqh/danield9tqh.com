@@ -1,0 +1,11 @@
+name = "danield9tqh-site"
+compatibility_date = "2025-12-27"
+
+[container]
+# This tells Cloudflare to build the image from the Dockerfile in the repo
+image = "./Dockerfile"
+port = 3000
+
+[vars]
+NODE_ENV = "production"
+
